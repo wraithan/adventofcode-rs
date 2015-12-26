@@ -2,10 +2,10 @@ use std::io::Read;
 use std::fs::File;
 
 fn main() {
-    let mut part_a_file = File::open("part_a.txt").unwrap();
-    let mut part_a_input = String::new();
-    part_a_file.read_to_string(&mut part_a_input).unwrap();
-    println!("Part A: floor {}", process_a(part_a_input));
+    let mut file = File::open("input.txt").unwrap();
+    let mut input = String::new();
+    file.read_to_string(&mut input).unwrap();
+    println!("Part A: floor {}", process_a(input));
 }
 
 fn process_a(input: String) -> isize {
@@ -19,30 +19,30 @@ fn process_a(input: String) -> isize {
 }
 
 #[test]
-fn example_1() {
+fn example_a_1() {
     assert_eq!(process_a("(())".to_owned()), 0);
     assert_eq!(process_a("()()".to_owned()), 0);
 }
 
 #[test]
-fn example_2() {
+fn example_a_2() {
     assert_eq!(process_a("(((".to_owned()), 3);
     assert_eq!(process_a("(()(()(".to_owned()), 3);
 }
 
 #[test]
-fn example_3() {
+fn example_a_3() {
     assert_eq!(process_a("))(((((".to_owned()), 3);
 }
 
 #[test]
-fn example_4() {
+fn example_a_4() {
     assert_eq!(process_a("())".to_owned()), -1);
     assert_eq!(process_a("))(".to_owned()), -1);
 }
 
 #[test]
-fn example_5() {
+fn example_a_5() {
     assert_eq!(process_a(")))".to_owned()), -3);
     assert_eq!(process_a(")())())".to_owned()), -3);
 }
