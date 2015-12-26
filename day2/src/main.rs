@@ -34,7 +34,30 @@ fn process_a(input: String) -> usize {
 }
 
 fn process_b(input: String) -> usize {
-    input.len()
+    let expression = Regex::new(r"^(\d+)x(\d+)x(\d+)$").unwrap();
+    input
+        .lines()
+        .filter_map(|line| {
+            if let Some(caps) = expression.captures(line) {
+                return Some([usize::from_str_radix(caps.at(1).unwrap(), 10).unwrap(),
+                             usize::from_str_radix(caps.at(2).unwrap(), 10).unwrap(),
+                             usize::from_str_radix(caps.at(3).unwrap(), 10).unwrap()])
+            }
+            None
+        })
+        .fold(0, |acc, item| {
+            let mut total = item.iter().fold(1, |acc, side| acc * side);
+            let biggest = item.iter().max().unwrap();
+            let mut found = false;
+            for side in item.iter() {
+                if !found && side == biggest {
+                    found = true;
+                    continue;
+                }
+                total += side + side
+            }
+            total + acc
+        })
 }
 
 #[test]
