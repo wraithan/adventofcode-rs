@@ -9,9 +9,8 @@ fn main() {
     let mut input = String::new();
     file.read_to_string(&mut input).unwrap();
     println!("Part A: {} sq ft", process_a(input.clone()));
-    //println!("Part B: instruction {}", process_b(input.clone()));
+    println!("Part B: {} ft", process_b(input.clone()));
 }
-
 
 fn process_a(input: String) -> usize {
     let expression = Regex::new(r"^(\d+)x(\d+)x(\d+)$").unwrap();
@@ -34,6 +33,10 @@ fn process_a(input: String) -> usize {
         })
 }
 
+fn process_b(input: String) -> usize {
+    input.len()
+}
+
 #[test]
 fn example_a_1() {
     assert_eq!(process_a("2x3x4".to_owned()), 58);
@@ -42,4 +45,14 @@ fn example_a_1() {
 #[test]
 fn example_a_2() {
     assert_eq!(process_a("1x1x10".to_owned()), 43);
+}
+
+#[test]
+fn example_b_1() {
+    assert_eq!(process_b("2x3x4".to_owned()), 34);
+}
+
+#[test]
+fn example_b_2() {
+    assert_eq!(process_b("1x1x10".to_owned()), 14);
 }
