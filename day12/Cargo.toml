@@ -1,0 +1,8 @@
+[package]
+name = "day12"
+version = "0.1.0"
+authors = ["Wraithan (Chris McDonald) <xwraithanx@gmail.com>"]
+
+[dependencies]
+regex = "0.1"
+serde_json = "0.6"
