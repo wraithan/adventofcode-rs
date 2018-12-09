@@ -1,5 +1,7 @@
 #![deny(clippy::all)]
 
+use std::collections::HashSet;
+
 fn main() -> Result<(), String> {
     let input = include_str!("../input.txt");
     let result = solve_puzzle_part_1(input)?;
@@ -25,7 +27,23 @@ fn solve_puzzle_part_1(input: &str) -> Result<i32, String> {
 }
 
 fn solve_puzzle_part_2(input: &str) -> Result<i32, String> {
-    Ok(input.len() as i32)
+    let input = input.split('\n').cycle();
+
+    let mut acc = 0;
+    let mut frequencies_seen = HashSet::new();
+    frequencies_seen.insert(acc); // initial accumulator value matters
+    for cur in input {
+        if !cur.is_empty() {
+            acc += cur
+                .parse::<i32>()
+                .map_err(|err| format!("Couldn't parse {}: {}", cur, err))?;
+            if frequencies_seen.contains(&acc) {
+                break;
+            }
+            frequencies_seen.insert(acc);
+        }
+    }
+    Ok(acc)
 }
 
 #[cfg(test)]
@@ -71,6 +89,30 @@ mod test_part_2 {
     fn example_01() {
         let input = "+1\n-1\n";
         let expected = 0;
+        let result = solve_puzzle_part_2(input).unwrap();
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn example_02() {
+        let input = "+3\n+3\n+4\n-2\n-4\n";
+        let expected = 10;
+        let result = solve_puzzle_part_2(input).unwrap();
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn example_03() {
+        let input = "-6\n+3\n+8\n+5\n-6\n";
+        let expected = 5;
+        let result = solve_puzzle_part_2(input).unwrap();
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn example_04() {
+        let input = "+7\n+7\n-2\n-7\n-4\n";
+        let expected = 14;
         let result = solve_puzzle_part_2(input).unwrap();
         assert_eq!(result, expected)
     }
