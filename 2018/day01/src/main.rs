@@ -10,15 +10,17 @@ fn main() -> Result<(), String> {
 }
 
 fn solve_puzzle_part_1(input: &str) -> Result<i32, String> {
-    let result = input.split('\n').fold(Ok(0), |acc: Result<i32, String>, cur: &str| {
-        let mut ret_val = acc?;
-        if !cur.is_empty() {
-            ret_val += cur.parse::<i32>().map_err(|err| {
-                format!("Couldn't parse {}: {}", cur, err)
-            })?;
-        }
-        Ok(ret_val)
-    })?;
+    let result = input
+        .split('\n')
+        .fold(Ok(0), |acc: Result<i32, String>, cur: &str| {
+            let mut ret_val = acc?;
+            if !cur.is_empty() {
+                ret_val += cur
+                    .parse::<i32>()
+                    .map_err(|err| format!("Couldn't parse {}: {}", cur, err))?;
+            }
+            Ok(ret_val)
+        })?;
     Ok(result)
 }
 
@@ -60,5 +62,16 @@ mod test_part_1 {
         let result = solve_puzzle_part_1(input).unwrap();
         assert_eq!(result, expected)
     }
+}
 
+#[cfg(test)]
+mod test_part_2 {
+    use super::solve_puzzle_part_2;
+    #[test]
+    fn example_01() {
+        let input = "+1\n-1\n";
+        let expected = 0;
+        let result = solve_puzzle_part_2(input).unwrap();
+        assert_eq!(result, expected)
+    }
 }
