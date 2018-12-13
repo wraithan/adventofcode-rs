@@ -27,7 +27,7 @@ fn solve_puzzle_part_1(input: &str) -> Result<u32, String> {
 
     let mut count = 0;
     for sqin in fabric.values() {
-        if sqin > &1 {
+        if *sqin > 1 {
             count += 1;
         }
     }
@@ -54,8 +54,8 @@ fn solve_puzzle_part_2(input: &str) -> Result<u32, String> {
         for x in order.x..(order.x + order.width) {
             for y in order.y..(order.y + order.height) {
                 let coords = format!("{},{}", x, y);
-                let value = fabric.get(&coords).unwrap();
-                if value > &1 {
+                let value = fabric[&coords];
+                if value > 1 {
                     continue 'order_loop;
                 }
             }
