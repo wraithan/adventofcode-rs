@@ -22,16 +22,8 @@ fn solve_puzzle_part_1(input: &str) -> Result<u32, String> {
     logs.sort_unstable();
     let shifts = sorted_logs_to_shifts(&logs);
     let most_sleep = shifts.values().max_by_key(|v| v.sleep_duration).unwrap();
-    let sleep_times = most_sleep.times_slept.iter().fold(HashMap::new(), |mut acc, (start, end)| {
-        for i in *start..*end {
-            let count = acc.entry(i).or_insert(0u32);
-            *count += 1;
-        }
-        acc
-    });
-    let most_common = sleep_times.iter().max_by_key(|(_k, v)| *v).unwrap().0;
-    
-    println!("Shifts: {:?}", shifts);
+    let most_common = most_common_minute_slept(most_sleep).0;
+
     Ok(most_sleep.guard_id * most_common)
 }
 
@@ -43,14 +35,11 @@ fn sorted_logs_to_shifts(logs: &[LogEntry]) -> HashMap<u32, Shift> {
     for log in logs {
         match log.entry_type {
             EntryType::StartShift(guard_id) => {
-                if !shifts.contains_key(&guard_id) {
-                    let shift = Shift {
-                        guard_id,
-                        sleep_duration: 0,
-                        times_slept: vec![],
-                    };
-                    shifts.insert(guard_id, shift);
-                }
+                shifts.entry(guard_id).or_insert_with(|| Shift {
+                    guard_id,
+                    sleep_duration: 0,
+                    times_slept: vec![],
+                });
                 current_guard = guard_id;
                 can_wake = false;
             }
@@ -72,8 +61,40 @@ fn sorted_logs_to_shifts(logs: &[LogEntry]) -> HashMap<u32, Shift> {
     shifts
 }
 
+fn most_common_minute_slept(shift: &Shift) -> (u32, u32) {
+    if shift.times_slept.len() == 0 {
+        return (0, 0);
+    }
+    let sleep_times = shift
+        .times_slept
+        .iter()
+        .fold(HashMap::new(), |mut acc, (start, end)| {
+            for i in *start..*end {
+                let count = acc.entry(i).or_insert(0u32);
+                *count += 1;
+            }
+            acc
+        });
+
+    let most_common = sleep_times.iter().max_by_key(|(_k, v)| *v).unwrap();
+    (*most_common.0, *most_common.1)
+}
+
 fn solve_puzzle_part_2(input: &str) -> Result<u32, String> {
-    Ok(input.len() as u32)
+    let mut logs: Vec<LogEntry> = input
+        .lines()
+        .filter(|line| !line.is_empty())
+        .map(parse_line)
+        .collect();
+    logs.sort_unstable();
+    let shifts = sorted_logs_to_shifts(&logs);
+    let most_common_per_guard = shifts
+        .values()
+        .map(|v| (v.guard_id, most_common_minute_slept(v)));
+    let most_sleeps_during_minute = most_common_per_guard
+        .max_by_key(|(_gid, (_minute, count))| *count)
+        .unwrap();
+    Ok(most_sleeps_during_minute.0 * (most_sleeps_during_minute.1).0)
 }
 
 #[derive(Debug)]
@@ -151,11 +172,12 @@ fn parse_line(input: &str) -> LogEntry {
 
     let mut date = NaiveDate::parse_from_str(date_str, "%Y-%m-%d").unwrap();
     let time = NaiveTime::parse_from_str(time_str, "%H:%M").unwrap();
-    let mut minute = time.minute();
-    if time.hour() == 23 {
+    let minute = if time.hour() == 23 {
         date += Duration::days(1);
-        minute = 0;
-    }
+        0
+    } else {
+        time.minute()
+    };
     LogEntry {
         entry_type,
         date,
@@ -224,9 +246,53 @@ mod test_part_2 {
     use super::solve_puzzle_part_2;
     #[test]
     fn example_01() {
-        let input = "";
-        let expected = 0;
+        let input = "[1518-11-01 00:00] Guard #10 begins shift™
+[1518-11-01 00:05] falls asleep
+[1518-11-01 00:25] wakes up
+[1518-11-01 00:30] falls asleep
+[1518-11-01 00:55] wakes up
+[1518-11-01 23:58] Guard #99 begins shift
+[1518-11-02 00:40] falls asleep
+[1518-11-02 00:50] wakes up
+[1518-11-03 00:05] Guard #10 begins shift
+[1518-11-03 00:24] falls asleep
+[1518-11-03 00:29] wakes up
+[1518-11-04 00:02] Guard #99 begins shift
+[1518-11-04 00:36] falls asleep
+[1518-11-04 00:46] wakes up
+[1518-11-05 00:03] Guard #99 begins shift
+[1518-11-05 00:45] falls asleep
+[1518-11-05 00:55] wakes up";
+        let expected = 4455;
         let result = solve_puzzle_part_2(input).unwrap();
+        assert_eq!(result, expected)
+    }
+
+    #[test]
+    fn example_01_reversed() {
+        let mut input: Vec<&str> = "[1518-11-01 00:00] Guard #10 begins shift™
+[1518-11-01 00:05] falls asleep
+[1518-11-01 00:25] wakes up
+[1518-11-01 00:30] falls asleep
+[1518-11-01 00:55] wakes up
+[1518-11-01 23:58] Guard #99 begins shift
+[1518-11-02 00:40] falls asleep
+[1518-11-02 00:50] wakes up
+[1518-11-03 00:05] Guard #10 begins shift
+[1518-11-03 00:24] falls asleep
+[1518-11-03 00:29] wakes up
+[1518-11-04 00:02] Guard #99 begins shift
+[1518-11-04 00:36] falls asleep
+[1518-11-04 00:46] wakes up
+[1518-11-05 00:03] Guard #99 begins shift
+[1518-11-05 00:45] falls asleep
+[1518-11-05 00:55] wakes up"
+            .lines()
+            .collect();
+        input.reverse();
+        let input: String = input.join("\n");
+        let expected = 4455;
+        let result = solve_puzzle_part_2(&input).unwrap();
         assert_eq!(result, expected)
     }
 }
