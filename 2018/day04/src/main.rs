@@ -62,7 +62,7 @@ fn sorted_logs_to_shifts(logs: &[LogEntry]) -> HashMap<u32, Shift> {
 }
 
 fn most_common_minute_slept(shift: &Shift) -> (u32, u32) {
-    if shift.times_slept.len() == 0 {
+    if shift.times_slept.is_empty() {
         return (0, 0);
     }
     let sleep_times = shift
