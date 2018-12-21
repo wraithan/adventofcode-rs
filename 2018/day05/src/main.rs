@@ -1,5 +1,10 @@
 // use std::collections::HashMap;
 
+static ASCII_LOWER: [char; 26] = [
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
+    't', 'u', 'v', 'w', 'x', 'y', 'z',
+];
+
 fn main() -> Result<(), String> {
     let input = include_str!("../input.txt");
     let result = solve_puzzle_part_1(input)?;
@@ -10,7 +15,6 @@ fn main() -> Result<(), String> {
 }
 
 fn solve_puzzle_part_1(input: &str) -> Result<u32, String> {
-    println!("Analyzing: {}", input);
     let input = input.trim();
     let mut result = vec![];
     for unit in input.chars() {
@@ -22,7 +26,9 @@ fn solve_puzzle_part_1(input: &str) -> Result<u32, String> {
             let last = result.last().expect("last char");
             if last == &unit {
                 result.push(unit);
-            } else if last.to_lowercase().next().expect("first char") == unit.to_lowercase().next().expect("first char") {
+            } else if last.to_lowercase().next().expect("first char")
+                == unit.to_lowercase().next().expect("first char")
+            {
                 result.pop();
             } else {
                 result.push(unit);
@@ -33,8 +39,17 @@ fn solve_puzzle_part_1(input: &str) -> Result<u32, String> {
 }
 
 fn solve_puzzle_part_2(input: &str) -> Result<u32, String> {
-    let input = input.trim();
-    Ok(input.len() as u32)
+    Ok(ASCII_LOWER
+        .iter()
+        .map(|a| {
+            let reduced_input: String = input
+                .chars()
+                .filter(|c| c != a && &c.to_lowercase().next().expect("char") != a)
+                .collect();
+            solve_puzzle_part_1(&reduced_input).expect("first solver")
+        })
+        .min()
+        .expect("min value"))
 }
 
 #[cfg(test)]
@@ -94,8 +109,8 @@ mod test_part_2 {
     use super::solve_puzzle_part_2;
     #[test]
     fn example_01() {
-        let input = "";
-        let expected = 0;
+        let input = "dabAcCaCBAcCcaDA";
+        let expected = 4;
         let result = solve_puzzle_part_2(input).unwrap();
         assert_eq!(result, expected)
     }
