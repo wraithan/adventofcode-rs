@@ -18,17 +18,13 @@ fn solve_puzzle_part_1(input: &str) -> Result<u32, String> {
     let input = input.trim();
     let mut result = vec![];
     for unit in input.chars() {
-        // println!("Testing {} ({:?})", unit, result);
         if result.is_empty() {
-            // println!("init");
             result.push(unit);
         } else {
             let last = result.last().expect("last char");
             if last == &unit {
                 result.push(unit);
-            } else if last.to_lowercase().next().expect("first char")
-                == unit.to_lowercase().next().expect("first char")
-            {
+            } else if last.to_ascii_lowercase() == unit.to_ascii_lowercase() {
                 result.pop();
             } else {
                 result.push(unit);
@@ -41,10 +37,11 @@ fn solve_puzzle_part_1(input: &str) -> Result<u32, String> {
 fn solve_puzzle_part_2(input: &str) -> Result<u32, String> {
     Ok(ASCII_LOWER
         .iter()
-        .map(|a| {
+        .map(|unit| {
+            let unit_upper = unit.to_ascii_uppercase();
             let reduced_input: String = input
                 .chars()
-                .filter(|c| c != a && &c.to_lowercase().next().expect("char") != a)
+                .filter(|c| c != unit && c != &unit_upper)
                 .collect();
             solve_puzzle_part_1(&reduced_input).expect("first solver")
         })
