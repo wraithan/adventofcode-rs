@@ -5,16 +5,7 @@ static ASCII_LOWER: [char; 26] = [
     't', 'u', 'v', 'w', 'x', 'y', 'z',
 ];
 
-fn main() -> Result<(), String> {
-    let input = include_str!("../input.txt");
-    let result = solve_puzzle_part_1(input)?;
-    println!("Day 04 - Part 1: {}", result);
-    let result = solve_puzzle_part_2(input)?;
-    println!("Day 04 - Part 2: {}", result);
-    Ok(())
-}
-
-fn solve_puzzle_part_1(input: &str) -> Result<u32, String> {
+pub fn solve_puzzle_part_1(input: &str) -> Result<u32, String> {
     let input = input.trim();
     let mut result = vec![];
     for unit in input.chars() {
@@ -24,7 +15,7 @@ fn solve_puzzle_part_1(input: &str) -> Result<u32, String> {
             let last = result.last().expect("last char");
             if last == &unit {
                 result.push(unit);
-            } else if last.to_ascii_lowercase() == unit.to_ascii_lowercase() {
+            } else if last.eq_ignore_ascii_case(&unit) {
                 result.pop();
             } else {
                 result.push(unit);
@@ -34,7 +25,7 @@ fn solve_puzzle_part_1(input: &str) -> Result<u32, String> {
     Ok(result.len() as u32)
 }
 
-fn solve_puzzle_part_2(input: &str) -> Result<u32, String> {
+pub fn solve_puzzle_part_2(input: &str) -> Result<u32, String> {
     Ok(ASCII_LOWER
         .iter()
         .map(|unit| {

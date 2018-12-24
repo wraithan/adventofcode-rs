@@ -4,16 +4,7 @@ use regex::Regex;
 use std::cmp::Ordering;
 use std::collections::HashMap;
 
-fn main() -> Result<(), String> {
-    let input = include_str!("../input.txt");
-    let result = solve_puzzle_part_1(input)?;
-    println!("Day 04 - Part 1: {}", result);
-    let result = solve_puzzle_part_2(input)?;
-    println!("Day 04 - Part 2: {}", result);
-    Ok(())
-}
-
-fn solve_puzzle_part_1(input: &str) -> Result<u32, String> {
+pub fn solve_puzzle_part_1(input: &str) -> Result<u32, String> {
     let mut logs: Vec<LogEntry> = input
         .lines()
         .filter(|line| !line.is_empty())
@@ -80,7 +71,7 @@ fn most_common_minute_slept(shift: &Shift) -> (u32, u32) {
     (*most_common.0, *most_common.1)
 }
 
-fn solve_puzzle_part_2(input: &str) -> Result<u32, String> {
+pub fn solve_puzzle_part_2(input: &str) -> Result<u32, String> {
     let mut logs: Vec<LogEntry> = input
         .lines()
         .filter(|line| !line.is_empty())

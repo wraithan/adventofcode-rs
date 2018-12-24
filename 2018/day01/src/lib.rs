@@ -2,18 +2,9 @@
 
 use std::collections::HashSet;
 
-fn main() -> Result<(), String> {
-    let input = include_str!("../input.txt");
-    let result = solve_puzzle_part_1(input)?;
-    println!("Day 01 - Part 1: {}", result);
-    let result = solve_puzzle_part_2(input)?;
-    println!("Day 01 - Part 2: {}", result);
-    Ok(())
-}
-
-fn solve_puzzle_part_1(input: &str) -> Result<i32, String> {
+pub fn solve_puzzle_part_1(input: &str) -> Result<i32, String> {
     let result = input
-        .split('\n')
+        .lines()
         .fold(Ok(0), |acc: Result<i32, String>, cur: &str| {
             let mut ret_val = acc?;
             if !cur.is_empty() {
@@ -26,8 +17,8 @@ fn solve_puzzle_part_1(input: &str) -> Result<i32, String> {
     Ok(result)
 }
 
-fn solve_puzzle_part_2(input: &str) -> Result<i32, String> {
-    let input = input.split('\n').cycle();
+pub fn solve_puzzle_part_2(input: &str) -> Result<i32, String> {
+    let input = input.lines().cycle();
 
     let mut acc = 0;
     let mut frequencies_seen = HashSet::new();

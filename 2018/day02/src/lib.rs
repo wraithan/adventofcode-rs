@@ -1,20 +1,11 @@
 use std::collections::HashMap;
 
-fn main() -> Result<(), String> {
-    let input = include_str!("../input.txt");
-    let result = solve_puzzle_part_1(input)?;
-    println!("Day 02 - Part 1: {}", result);
-    let result = solve_puzzle_part_2(input)?;
-    println!("Day 02 - Part 2: {}", result);
-    Ok(())
-}
-
 struct HashInput {
     two: u32,
     three: u32,
 }
 
-fn solve_puzzle_part_1(input: &str) -> Result<u32, String> {
+pub fn solve_puzzle_part_1(input: &str) -> Result<u32, String> {
     let mut char_counts = HashMap::new();
 
     let label_list = input.lines().filter(|label| !label.is_empty());
@@ -26,24 +17,24 @@ fn solve_puzzle_part_1(input: &str) -> Result<u32, String> {
             let current_count = char_counts.entry(label_char).or_insert(0);
             *current_count += 1;
         });
-        let mut two_or_three = HashInput { two: 0, three: 0 };
-        char_counts
-            .values()
-            .fold(&mut two_or_three, |mut acc, cur| {
-                match cur {
-                    2 => acc.two = 1,
-                    3 => acc.three = 1,
-                    _ => (),
-                };
-                acc
-            });
+        let two_or_three =
+            char_counts
+                .values()
+                .fold(HashInput { two: 0, three: 0 }, |mut acc, cur| {
+                    match cur {
+                        2 => acc.two = 1,
+                        3 => acc.three = 1,
+                        _ => (),
+                    };
+                    acc
+                });
         hash_inputs.two += two_or_three.two;
         hash_inputs.three += two_or_three.three;
     }
     Ok(hash_inputs.two * hash_inputs.three)
 }
 
-fn solve_puzzle_part_2(input: &str) -> Result<String, String> {
+pub fn solve_puzzle_part_2(input: &str) -> Result<String, String> {
     let label_list = input.lines().filter(|label| !label.is_empty());
     for (index, label) in label_list.clone().enumerate() {
         for other_label in label_list.clone().skip(index + 1) {

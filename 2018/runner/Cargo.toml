@@ -1,0 +1,12 @@
+[package]
+name = "runner"
+version = "0.1.0"
+authors = ["Wraithan (Chris McDonald) <xwraithanx@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+day01 = { path = "../day01" }
+day02 = { path = "../day02" }
+day03 = { path = "../day03" }
+day04 = { path = "../day04" }
+day05 = { path = "../day05" }
