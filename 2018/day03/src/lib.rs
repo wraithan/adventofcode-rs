@@ -1,3 +1,5 @@
+#![deny(clippy::all)]
+
 use std::collections::HashMap;
 
 pub fn solve_puzzle_part_1(input: &str) -> Result<u32, String> {
@@ -16,12 +18,7 @@ pub fn solve_puzzle_part_1(input: &str) -> Result<u32, String> {
         }
     }
 
-    let mut count = 0;
-    for sqin in fabric.values() {
-        if *sqin > 1 {
-            count += 1;
-        }
-    }
+    let count = fabric.values().map(|sqin| std::cmp::min(1, *sqin)).sum();
     Ok(count)
 }
 

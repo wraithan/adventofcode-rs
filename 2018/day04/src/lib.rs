@@ -1,3 +1,5 @@
+#![deny(clippy::all)]
+
 use chrono::{Duration, NaiveDate, NaiveTime, Timelike};
 use lazy_static::lazy_static;
 use regex::Regex;
