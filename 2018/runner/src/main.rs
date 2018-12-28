@@ -5,26 +5,26 @@ use day02;
 use day03;
 use day04;
 use day05;
+use std::time::{Duration, Instant};
 
 macro_rules! expand_day {
     ($day_name:ident, $display_name:expr) => {
         // Load input file
-        let start = std::time::Instant::now();
-        let day_name = stringify!($day_name);
-        let mut input_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        input_path.pop();
-        input_path.push(day_name);
-        input_path.push("input.txt");
-        let input = std::fs::read_to_string(input_path).expect("input text");
-        let load_time = start.elapsed();
+        let (input, load_time) = time_func(|| {
+            let day_name = stringify!($day_name);
+            let mut input_path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+            input_path.pop();
+            input_path.push(day_name);
+            input_path.push("input.txt");
+            std::fs::read_to_string(input_path).expect("input text")
+        });
 
         // Solve puzzles
-        let start = std::time::Instant::now();
-        let part1_answer = $day_name::solve_puzzle_part_1(&input).expect("don't crash");
-        let part1_time = start.elapsed();
-        let start = std::time::Instant::now();
-        let part2_answer = $day_name::solve_puzzle_part_2(&input).expect("don't crash");
-        let part2_time = start.elapsed();
+        let (part1_answer, part1_time) =
+            time_func(|| $day_name::solve_puzzle_part_1(&input).expect("don't crash"));
+
+        let (part2_answer, part2_time) =
+            time_func(|| $day_name::solve_puzzle_part_2(&input).expect("don't crash"));
 
         // Print result
         println!(
@@ -42,10 +42,20 @@ macro_rules! expand_day {
     };
 }
 
+fn time_func<F, T>(func: F) -> (T, Duration)
+where
+    F: FnOnce() -> T,
+    T: Sized,
+{
+    let start = Instant::now();
+    (func(), start.elapsed())
+}
+
 fn main() {
     expand_day!(day01, "Day 01");
     expand_day!(day02, "Day 02");
     expand_day!(day03, "Day 03");
+    expand_day!(day03_query, "Day 03 Query");
     expand_day!(day04, "Day 04");
     expand_day!(day05, "Day 05");
 }
